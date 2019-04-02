@@ -1,23 +1,18 @@
 const mongoose = require("mongoose");
-const { isEmail } = require("validator");
 const common = require("../src/modules/common");
+
+const toLower = str => str.toLowerCase();
 
 var userSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true },
-    email: {
+    username: {
       type: String,
-      validate: [isEmail],
       required: true,
-      dropDups: true
+      dropDups: true,
+      set: toLower
     },
     password: { type: String, required: true, set: common.hash },
-    address: {
-      address_1: String,
-      city: String,
-      country: String,
-      zip: String
-    }
+    github_token: { type: String, required: true }
   },
   {
     timestamps: true
@@ -32,7 +27,6 @@ userSchema.methods.toJSON = function() {
 
 userSchema.methods.checkPassword = async function(password) {
   if (common.hash(password) === this.password) {
-    console.log(this);
     return this;
   }
   throw { status: 401 };
