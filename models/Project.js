@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { isURL } = require("validator");
+const uuid = require("uuid/v4");
 
 var projectSchema = new mongoose.Schema(
   {
@@ -12,8 +13,17 @@ var projectSchema = new mongoose.Schema(
       required: true,
       validate: [isURL]
     },
-    branch: {
+    trigger_branch: {
       type: String,
+      required: true
+    },
+    token: {
+      type: String,
+      default: uuid()
+    },
+    user: {
+      type: mongoose.Types.ObjectId,
+      ref: "User",
       required: true
     }
   },

@@ -15,7 +15,7 @@ let data = {
           if (err) throw authHeader;
           let _user = await User.findById(decode._id);
           if (!_user) throw authHeader;
-          request.user = _user;
+          request.user = _user.toJSON();
           next();
         } catch (error) {
           response.reply({ statusCode: 401 });

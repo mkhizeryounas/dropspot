@@ -19,6 +19,7 @@ router.post("/signup", async (request, response, next) => {
     const schema = Joi.object().keys({
       username: Joi.string()
         .alphanum()
+        .lowercase()
         .required(),
       password: Joi.string()
         .alphanum()
@@ -47,10 +48,9 @@ router.post("/signin", async (request, response, next) => {
         .required()
     });
     let data = await validate(request.body, schema);
-    let _user = await User.findOne({ username: data.username });
+    let _user = await User.findOne({ username: data.username }).toJSON;
     if (!_user) throw { status: 401 };
     await _user.checkPassword(data.password);
-    console.log(_user);
     const creds = lock(_user);
     response.reply({ data: creds });
   } catch (err) {
