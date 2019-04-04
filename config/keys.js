@@ -4,5 +4,5 @@ module.exports = {
   secret: process.env.secret || "c6aSsUzQBACrdWoWy6g7BkuxwKfkPbmB",
   base_dir:
     process.env.base_dir ||
-    "/Users/mkhizeryounas/Desktop/Projects/web/dropspot/__projects__/"
+    "/Users/mkhizeryounas/Desktop/Projects/web/__DROPSPOT_PROJRCTS__/"
 };

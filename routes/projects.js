@@ -1,9 +1,9 @@
 var express = require("express");
 var router = express.Router();
 const { Project } = require("../config/models");
-const { validate, gihub_auther_url } = require("../src/modules/common");
+const { gihub_auther_url } = require("../src/modules/common");
 const { unlock } = require("../src/modules/locker");
-const Joi = require("joi");
+const { clone } = require("../git-scripts");
 
 /* GET home page. */
 router.get("/", unlock, async function(request, response, next) {
@@ -30,28 +30,22 @@ router.get("/", unlock, async function(request, response, next) {
 
 router.post("/", unlock, async (request, response, next) => {
   try {
-    const schema = Joi.object().keys({
-      name: Joi.string()
-        .alphanum()
-        .lowercase()
-        .required(),
-      github_repo: Joi.string().required(),
-      trigger_branch: Joi.string()
-        .alphanum()
-        .required()
-    });
-    let data = await validate(request.body, schema);
-    let existingFlag = await Project.findOne({ name: data.name });
-    if (existingFlag) throw { status: 409 };
+    let data = request.body;
+    // let existingFlag = await Project.findOne({ name: data.name });
+    // if (existingFlag) throw { status: 409 };
     data["user"] = request.user._id;
-    // let authedUrl = gihub_auther_url(
-    //   data.github_repo,
-    //   request.user.github_personal_token
-    // );
 
-    console.log("authedUrl", authedUrl);
+    data["url"] = gihub_auther_url(
+      data.github_repo,
+      request.user.github_personal_token
+    );
+
     let newProject = new Project(data);
     await newProject.save();
+
+    // Clone project in it's destination
+    await clone({ ...newProject.toJSON(), url: data["url"] });
+
     response.reply({ data: newProject });
   } catch (err) {
     next(err);

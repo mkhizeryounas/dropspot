@@ -1,12 +1,15 @@
 const mongoose = require("mongoose");
 const common = require("../src/modules/common");
 
+const { toLower } = require("../src/modules/common");
+
 var userSchema = new mongoose.Schema(
   {
     username: {
       type: String,
       required: true,
-      dropDups: true
+      dropDups: true,
+      set: toLower
     },
     password: { type: String, required: true, set: common.hash },
     github_personal_token: { type: String, required: true }

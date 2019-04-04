@@ -1,11 +1,11 @@
 module.exports = {
   apps: [
     {
-      name: "webpeer-platform",
-      script: "./app.js",
+      name: "dropspot",
+      script: "./www/bin",
       env: {
         NODE_ENV: "production",
-        PORT: "3010"
+        PORT: "8080"
       }
     }
   ]

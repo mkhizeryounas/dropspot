@@ -48,7 +48,7 @@ router.post("/signin", async (request, response, next) => {
         .required()
     });
     let data = await validate(request.body, schema);
-    let _user = await User.findOne({ username: data.username }).toJSON;
+    let _user = await User.findOne({ username: data.username });
     if (!_user) throw { status: 401 };
     await _user.checkPassword(data.password);
     const creds = lock(_user);

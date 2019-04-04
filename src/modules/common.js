@@ -26,5 +26,6 @@ module.exports = {
   },
   gihub_auther_url: (github_repo, token) => {
     return github_repo.replace("https://", `https://${token}:x-oauth-basic@`);
-  }
+  },
+  toLower: str => str.toLowerCase()
 };
