@@ -16,9 +16,10 @@ docker.container
       "sh",
       "-c",
       `
-      git clone ${git_meta.repo} app 
+      git clone ${git_meta.repo} --single-branch --branch ${
+        git_meta.branch
+      } app 
       cd app
-      git checkout ${git_meta.branch}
       npm install
       npm start
       `
