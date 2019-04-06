@@ -5,7 +5,7 @@ const { gihub_auther_url } = require("../src/modules/common");
 const { unlock } = require("../src/modules/locker");
 const { clone } = require("../git-scripts");
 
-/* GET home page. */
+/* List */
 router.get("/", unlock, async function(request, response, next) {
   try {
     // Pagination code
@@ -28,11 +28,12 @@ router.get("/", unlock, async function(request, response, next) {
   }
 });
 
+/* Create */
 router.post("/", unlock, async (request, response, next) => {
   try {
     let data = request.body;
-    // let existingFlag = await Project.findOne({ name: data.name });
-    // if (existingFlag) throw { status: 409 };
+    let existingFlag = await Project.findOne({ name: data.name });
+    if (existingFlag) throw { status: 409 };
     data["user"] = request.user._id;
 
     data["url"] = gihub_auther_url(
@@ -47,6 +48,48 @@ router.post("/", unlock, async (request, response, next) => {
     await clone({ ...newProject.toJSON(), url: data["url"] });
 
     response.reply({ data: newProject });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/* Update */
+router.patch("/:id", unlock, async (request, response, next) => {
+  try {
+    let data = request.body,
+      id = request.params.id;
+
+    data["user"] = request.user._id;
+
+    // data["url"] = gihub_auther_url(
+    //   data.github_repo,
+    //   request.user.github_personal_token
+    // );
+
+    // let newProject = new Project(data);
+    // await newProject.save();
+
+    // Clone project in it's destination
+    // await clone({ ...newProject.toJSON(), url: data["url"] });
+
+    let updatedProject = await Project.findOneAndUpdate(
+      { _id: id },
+      { $set: data },
+      { new: true }
+    );
+
+    let git_url = gihub_auther_url(
+      updatedProject.github_repo,
+      request.user.github_personal_token
+    );
+
+    console.log(git_url);
+
+    // Delete old project
+
+    // Clone project in it's destination
+
+    response.reply({ data: updatedProject });
   } catch (err) {
     next(err);
   }
