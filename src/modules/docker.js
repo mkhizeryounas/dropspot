@@ -10,7 +10,7 @@ const project = {
     branch: "develop"
   },
   env: [
-    `mongodb="mongodb://mkhizeryounas:Mkhizer#321@ds159737.mlab.com:59737/dropspot"`
+    `mongodb=mongodb://mkhizeryounas:Mkhizer_321@ds159737.mlab.com:59737/dropspot`
   ]
 };
 
