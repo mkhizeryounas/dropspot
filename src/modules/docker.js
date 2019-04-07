@@ -45,20 +45,27 @@ const dockerize = async project => {
 };
 
 const stop_container = async id => {
-  return docker.container.get(id).stop();
+  let container = docker.container.get(id);
+  if (container) return container.stop();
+  return false;
 };
 
 const delete_container = async id => {
-  return docker.container.get(id).delete({ force: true });
+  let container = docker.container.get(id);
+  if (container) return container.delete({ force: true });
+  return false;
 };
 
 const container_logs = async id => {
-  let stream = await docker.container.get(id).logs({
-    follow: false,
-    stdout: true,
-    stderr: true
-  });
-  return stream;
+  let container = docker.container.get(id);
+  if (container) {
+    return constainer.logs({
+      follow: false,
+      stdout: true,
+      stderr: true
+    });
+  }
+  return false;
 };
 
 module.exports = {
