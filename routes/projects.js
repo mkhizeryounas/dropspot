@@ -82,7 +82,7 @@ router.patch("/:id", unlock, async (request, response, next) => {
     // Save old data first
     let prevData = await Project.findOne({ _id: id, user: data["user"] });
     if (!prevData) throw { status: 404 };
-
+    console.log(prevData);
     // Update with new data
     let updatedProject = await Project.findOneAndUpdate(
       { _id: id },
@@ -97,8 +97,8 @@ router.patch("/:id", unlock, async (request, response, next) => {
     );
 
     if (updatedProject.status === "inActive") {
-      // await stop_container(prevData.container);
-      await delete_container(prevData.container);
+      await stop_container(prevData.container);
+      // await delete_container(prevData.container);
     } else {
       // Delete old project
       await delete_container(prevData.container);
