@@ -1,6 +1,16 @@
 const express = require("express");
 const router = express.Router();
-var http = require("http");
+var http = require("request-promise");
+
+let responseBuilder = (response, result) => {
+  response.status(result.statusCode);
+  response.set(result.headers);
+  let err = result.error;
+  try {
+    err = JSON.parse(err);
+  } catch (err) {}
+  response.send(result.body || err);
+};
 
 /* GET home page. */
 router.all("/:project/**", async function(request, response, next) {
@@ -10,33 +20,25 @@ router.all("/:project/**", async function(request, response, next) {
 
     let appName = originalUrl[2];
     let appUrl = originalUrl.slice(3).join("/");
-
-    let options = {
-      hostname: "localhost",
-      port: 3010,
-      path: `/${appUrl}`,
-      method: request.method,
-      headers: request.headers,
-      body: request.body
-    };
-    var proxy = http.request(options, function(res) {
-      response.writeHead(res.statusCode, res.headers);
-      res.pipe(
-        response,
-        {
-          end: true
-        }
-      );
-    });
-
-    request.pipe(
-      proxy,
-      {
-        end: true
-      }
-    );
+    let port = 3010;
 
     console.log(appName, appUrl);
+
+    http({
+      method: request.method,
+      uri: `http://localhost:${port}`,
+      headers: request.headers,
+      data: request.body,
+      qs: request.query,
+      formData: request.body,
+      resolveWithFullResponse: true
+    })
+      .then(result => {
+        responseBuilder(response, result);
+      })
+      .catch(result => {
+        responseBuilder(response, result);
+      });
   } catch (err) {
     next(err);
   }
