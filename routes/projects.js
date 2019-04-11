@@ -40,7 +40,7 @@ router.post("/", unlock, async (request, response, next) => {
   try {
     let data = request.body;
     let existingFlag = await Project.findOne({ name: data.name });
-    // if (existingFlag) throw { status: 409 };
+    if (existingFlag) throw { status: 409 };
     data["user"] = request.user._id;
 
     data["url"] = gihub_auther_url(
@@ -78,6 +78,9 @@ router.patch("/:id", unlock, async (request, response, next) => {
       id = request.params.id;
 
     data["user"] = request.user._id;
+
+    // Do not let name update
+    delete request.body["name"];
 
     // Save old data first
     let prevData = await Project.findOne({ _id: id, user: data["user"] });
