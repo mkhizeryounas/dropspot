@@ -182,9 +182,9 @@ router.delete("/:id", unlock, async (request, response, next) => {
     await delete_container(prevData.container);
 
     // Delete with new data
-    let deletedProject = await Project.findOneAndDelete({ _id: id });
+    prevData.remove();
 
-    response.reply({ data: deletedProject });
+    response.reply({ data: prevData });
   } catch (err) {
     next(err);
   }
