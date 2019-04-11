@@ -32,7 +32,7 @@ const dockerize = async project => {
       Workdir: ".",
       name: project.name,
       ExposedPorts: { "8080/tcp": {} },
-      PortBindings: { "8080/tcp": [{ HostPort: "3010" }] }
+      PortBindings: { "8080/tcp": [{ HostPort: "1122" }] }
     });
     console.log("Docker Success", container);
     container.start();
