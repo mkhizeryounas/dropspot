@@ -10,6 +10,7 @@ const {
   container_logs
 } = require("../src/modules/docker");
 const { create_hook } = require("../src/modules/github");
+let { nextAvailable } = require("node-port-check");
 
 /* List */
 router.get("/", unlock, async function(request, response, next) {
@@ -40,7 +41,7 @@ router.post("/", unlock, async (request, response, next) => {
   try {
     let data = request.body;
     let existingFlag = await Project.findOne({ name: data.name });
-    // if (existingFlag) throw { status: 409 };
+    if (existingFlag) throw { status: 409 };
     data["user"] = request.user._id;
 
     data["url"] = gihub_auther_url(
@@ -48,22 +49,25 @@ router.post("/", unlock, async (request, response, next) => {
       request.user.github_personal_token
     );
 
+    data.port = await nextAvailable("3000", "0.0.0.0");
+
     let newProject = new Project(data);
     await newProject.save();
 
-    // Clone project in it's destination
-    // await clone({ ...newProject.toJSON(), url: data["url"] });
     let container_id = await dockerize({
       ...newProject.toJSON(),
       repo: data["url"]
     });
 
     newProject.container = container_id;
-    newProject.save();
+    await newProject.save();
+
     let hook = await create_hook(
       newProject,
       request.user.github_personal_token
     );
+
+    console.log("🔌 Port #", data.port);
     console.log("🚀 Github Hook", hook);
     response.reply({ data: newProject });
   } catch (err) {
@@ -78,6 +82,9 @@ router.patch("/:id", unlock, async (request, response, next) => {
       id = request.params.id;
 
     data["user"] = request.user._id;
+
+    // Do not let name update
+    delete request.body["name"];
 
     // Save old data first
     let prevData = await Project.findOne({ _id: id, user: data["user"] });
@@ -179,9 +186,9 @@ router.delete("/:id", unlock, async (request, response, next) => {
     await delete_container(prevData.container);
 
     // Delete with new data
-    let deletedProject = await Project.findOneAndDelete({ _id: id });
+    prevData.remove();
 
-    response.reply({ data: deletedProject });
+    response.reply({ data: prevData });
   } catch (err) {
     next(err);
   }
