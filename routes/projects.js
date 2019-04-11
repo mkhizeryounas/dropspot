@@ -10,6 +10,7 @@ const {
   container_logs
 } = require("../src/modules/docker");
 const { create_hook } = require("../src/modules/github");
+let { nextAvailable } = require("node-port-check");
 
 /* List */
 router.get("/", unlock, async function(request, response, next) {
@@ -48,22 +49,25 @@ router.post("/", unlock, async (request, response, next) => {
       request.user.github_personal_token
     );
 
+    data.port = await nextAvailable("3000", "0.0.0.0");
+
     let newProject = new Project(data);
     await newProject.save();
 
-    // Clone project in it's destination
-    // await clone({ ...newProject.toJSON(), url: data["url"] });
     let container_id = await dockerize({
       ...newProject.toJSON(),
       repo: data["url"]
     });
 
     newProject.container = container_id;
-    newProject.save();
+    await newProject.save();
+
     let hook = await create_hook(
       newProject,
       request.user.github_personal_token
     );
+
+    console.log("🔌 Port #", data.port);
     console.log("🚀 Github Hook", hook);
     response.reply({ data: newProject });
   } catch (err) {

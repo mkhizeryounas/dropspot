@@ -54,6 +54,10 @@ var projectSchema = new mongoose.Schema(
       type: String,
       default: "active",
       enum: ["active", "inActive", "inProgress", "fail"]
+    },
+    port: {
+      type: String,
+      default: ""
     }
   },
   {
