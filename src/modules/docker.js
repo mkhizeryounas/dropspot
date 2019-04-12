@@ -6,7 +6,7 @@ const docker = new Docker({ socketPath: docker_sock });
 const dockerize = async project => {
   let container;
   try {
-    project.env.push("PORT=8080");
+    // project.env.push("PORT=8080");
     project["envString"] = "";
     project.env.map(e => {
       project.envString += `echo ${e} >> .env \n`;
@@ -26,7 +26,7 @@ const dockerize = async project => {
           cd app
           ${project.envString}
           ${project.build}
-          ${project.script}
+          PORT=8080 ${project.script}
         `
       ],
       Workdir: ".",
