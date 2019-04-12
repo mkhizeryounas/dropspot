@@ -52,7 +52,6 @@ router.post("/", unlock, async (request, response, next) => {
     data.port = await nextAvailable("3000", "0.0.0.0");
 
     let newProject = new Project(data);
-    await newProject.save();
 
     let container_id = await dockerize({
       ...newProject.toJSON(),
@@ -66,6 +65,8 @@ router.post("/", unlock, async (request, response, next) => {
       newProject,
       request.user.github_personal_token
     );
+
+    await newProject.save();
 
     console.log("🔌 Port #", data.port);
     console.log("🚀 Github Hook", hook);
@@ -183,7 +184,11 @@ router.delete("/:id", unlock, async (request, response, next) => {
     if (!prevData) throw { status: 404 };
 
     // Delete old project
-    await delete_container(prevData.container);
+    try {
+      await delete_container(prevData.container);
+    } catch (err) {
+      console.log("Docker Container Err delete", err);
+    }
 
     // Delete with new data
     prevData.remove();
