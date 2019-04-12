@@ -140,10 +140,7 @@ router.post("/:id/webhook/:token", async (request, response, next) => {
     }).populate(["user"]);
     if (!prevData) throw { status: 404 };
 
-    if (
-      request.body.events.includes("push") &&
-      !request.body.ref.endsWith(prevData.trigger_branch)
-    )
+    if (request.body.ref && !request.body.ref.endsWith(prevData.trigger_branch))
       throw {
         status: 204
       };
