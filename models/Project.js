@@ -58,6 +58,14 @@ var projectSchema = new mongoose.Schema(
     port: {
       type: String,
       default: ""
+    },
+    path: {
+      type: String,
+      default: ""
+    },
+    deployment_type: {
+      type: String,
+      default: "container"
     }
   },
   {
