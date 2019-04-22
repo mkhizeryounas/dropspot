@@ -4,7 +4,6 @@ const { Project, Deployment } = require("../config/models");
 const { gihub_auther_url } = require("../src/modules/common");
 const { unlock } = require("../src/modules/locker");
 const { create_hook } = require("../src/modules/github");
-const { nextAvailable } = require("node-port-check");
 const deployeProject = require("../src/modules/deployeProjectPipeline");
 
 /* List */
@@ -56,7 +55,8 @@ router.post("/", unlock, async (request, response, next) => {
 
     let hook = await create_hook(
       newProject,
-      request.user.github_personal_token
+      request.user.github_personal_token,
+      "pipelines"
     );
 
     await newProject.save();
