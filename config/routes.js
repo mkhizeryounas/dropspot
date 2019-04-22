@@ -9,7 +9,7 @@ var pipelinesRouter = require("../routes/pipelines");
 module.exports = app => {
   app.use("/", indexRouter);
   app.use("/users", usersRouter);
-  app.use("/projects", projectsRouter);
+  // app.use("/projects", projectsRouter);
   app.use("/apps", appsRouter);
   app.use("/pipelines", pipelinesRouter);
 };

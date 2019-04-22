@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const { isURL } = require("validator");
 const uuid = require("uuid/v4");
-const { base_dir } = require("../config/keys");
 const { toLower } = require("../src/modules/common");
 
 var projectSchema = new mongoose.Schema(
@@ -66,6 +65,9 @@ var projectSchema = new mongoose.Schema(
     deployment_type: {
       type: String,
       default: "container"
+    },
+    serverConfig: {
+      type: Object
     }
   },
   {
