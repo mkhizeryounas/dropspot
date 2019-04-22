@@ -23,6 +23,7 @@
     "morgan": "~1.9.0",
     "node-docker-api": "^1.1.22",
     "node-port-check": "^2.0.1",
+    "node-ssh": "^6.0.0",
     "npm": "^6.9.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
