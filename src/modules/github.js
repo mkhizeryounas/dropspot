@@ -1,7 +1,7 @@
 const http = require("request-promise");
 const { base_url } = require("../../config/keys");
 
-const create_hook = async (project, token) => {
+const create_hook = async (project, token, type) => {
   try {
     let meta = project.github_repo;
     meta = meta.replace("https://github.com/", "");
@@ -15,7 +15,7 @@ const create_hook = async (project, token) => {
       active: true,
       events: ["push"],
       config: {
-        url: `${base_url}/pipelines/${project._id}/webhook/${project.token}`,
+        url: `${base_url}/${type}/${project._id}/webhook/${project.token}`,
         content_type: "json"
       }
     };

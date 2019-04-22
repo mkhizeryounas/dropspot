@@ -63,7 +63,8 @@ router.post("/", unlock, async (request, response, next) => {
 
     let hook = await create_hook(
       newProject,
-      request.user.github_personal_token
+      request.user.github_personal_token,
+      "projects"
     );
 
     await newProject.save();
